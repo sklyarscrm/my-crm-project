@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>CRM Минимал</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  h1 { color: #333; }
+  .container { display: flex; gap: 40px; }
+  .block { width: 45%; }
+  ul { list-style: none; padding: 0; }
+  li { padding: 5px 0; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<h1>Минимальная CRM</h1>
+
+<div class="container">
+  <div class="block">
+    <h2>Воронка продаж</h2>
+    <ul id="pipeline-list">
+      <li>Загрузка...</li>
+    </ul>
+  </div>
+
+  <div class="block">
+    <h2>Клиенты</h2>
+    <ul id="clients-list">
+      <li>Загрузка...</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+async function loadPipeline() {
+  const res = await fetch('/api/pipeline');
+  const data = await res.json();
+  const ul = document.getElementById('pipeline-list');
+  ul.innerHTML = '';
+  data.forEach(stage => {
+    const li = document.createElement('li');
+    li.textContent = `${stage.stage}: ${stage.count} заказов`;
+    ul.appendChild(li);
+  });
+}
+
+async function loadClients() {
+  const res = await fetch('/api/clients');
+  const data = await res.json();
+  const ul = document.getElementById('clients-list');
+  ul.innerHTML = '';
+  if(data.length === 0) {
+    ul.innerHTML = '<li>Нет клиентов</li>';
+    return;
+  }
+  data.forEach(client => {
+    const li = document.createElement('li');
+    li.textContent = `${client.fio} (${client.client_type}) — статус: ${client.status}`;
+    ul.appendChild(li);
+  });
+}
+
+loadPipeline();
+loadClients();
+</script>
+
+</body>
+</html>

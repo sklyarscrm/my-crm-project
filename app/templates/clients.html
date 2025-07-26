@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Клиенты</title>
+</head>
+<body>
+    <h1>Список клиентов</h1>
+    <a href="/">Главная</a> | <a href="/orders">Заказы</a> | <a href="/logout">Выйти</a>
+
+    <ul>
+        {% for client in clients %}
+            <li>{{ client.fio }} — {{ client.phone }} — {{ client.region }} — {{ client.status }}</li>
+        {% else %}
+            <li>Клиенты не найдены</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Добавить клиента</h2>
+    <form method="POST" action="/add-client">
+        <input name="fio" placeholder="ФИО" required><br>
+        <input name="phone" placeholder="Телефон"><br>
+        <input name="messengers" placeholder="Мессенджеры"><br>
+        <input name="region" placeholder="Регион"><br>
+        <input name="client_type" placeholder="Тип клиента"><br>
+        <input name="status" placeholder="Статус" value="новый"><br><br>
+        <button type="submit">Добавить</button>
+    </form>
+</body>
+</html>
