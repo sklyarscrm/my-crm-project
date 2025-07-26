@@ -96,5 +96,7 @@ def pipeline():
     return jsonify(result)
 
 if __name__ == '__main__':
+    import os
     port = int(os.environ.get('PORT', 5000))
+    print(f"Запуск приложения на порту {port}")  # Для логов Render
     app.run(host='0.0.0.0', port=port)
