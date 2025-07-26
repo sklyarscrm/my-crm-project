@@ -6,6 +6,10 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, template_folder=os.path.join(basedir, 'app', 'templates'))
 
+app = Flask(__name__, template_folder=os.path.join(basedir, 'app', 'templates'))
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Отключает кеш статики
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crm.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
