@@ -4,17 +4,21 @@ from datetime import datetime
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Создаём Flask приложение с указанием папки шаблонов
 app = Flask(__name__, template_folder=os.path.join(basedir, 'app', 'templates'))
 
-app = Flask(__name__, template_folder=os.path.join(basedir, 'app', 'templates'))
+# Включаем автообновление шаблонов и отключаем кеш статики (для разработки)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Отключает кеш статики
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+# Настройки базы данных
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crm.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Модель Клиента
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fio = db.Column(db.String(150), nullable=False)
@@ -25,6 +29,7 @@ class Client(db.Model):
     status = db.Column(db.String(50))
     orders = db.relationship('Order', backref='client', lazy=True)
 
+# Модель Заказа
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, default=datetime.utcnow)
@@ -32,13 +37,16 @@ class Order(db.Model):
     status = db.Column(db.String(50))
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
 
+# Создаем таблицы при первом запуске
 with app.app_context():
     db.create_all()
 
+# Главная страница
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# API Клиентов
 @app.route('/api/clients', methods=['GET', 'POST'])
 def clients():
     if request.method == 'GET':
@@ -66,6 +74,7 @@ def clients():
     db.session.commit()
     return jsonify({'message': 'Клиент добавлен', 'id': client.id})
 
+# API Заказов
 @app.route('/api/orders', methods=['GET', 'POST'])
 def orders():
     if request.method == 'GET':
@@ -90,6 +99,7 @@ def orders():
     db.session.commit()
     return jsonify({'message': 'Заказ добавлен', 'id': order.id})
 
+# API Воронки продаж
 @app.route('/api/pipeline')
 def pipeline():
     stages = ["Заявка", "Переговоры", "Счёт", "Оплата", "Доставка"]
@@ -99,8 +109,8 @@ def pipeline():
         result.append({'stage': stage, 'count': count})
     return jsonify(result)
 
+# Запуск приложения
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
-    print(f"Запуск приложения на порту {port}")  # Для логов Render
+    print(f"Запуск приложения на порту {port}")
     app.run(host='0.0.0.0', port=port)
